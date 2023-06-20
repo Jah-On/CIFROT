@@ -123,8 +123,11 @@ function resetTesting() {
         document.getElementsByClassName("testing")[i].close();
     }
     document.getElementById("testIntro").style.display = "flex";
-    document.getElementsByClassName("inTestDirections")[testType].style.display = "flex";
-    document.getElementsByClassName("exportOptions")[testType].style.display = "none";
+    if (testType != -1){
+        document.getElementsByClassName("inTestDirections")[testType].style.display = "flex";
+        document.getElementsByClassName("exportOptions")[testType].style.display = "none";
+        testType = -1;
+    }
     if (chart != undefined){
         chart.clear();
         chart.destroy();
