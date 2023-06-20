@@ -175,12 +175,6 @@ function test(elementPosition, color){
                     min: 20,
                     max: 20000,
                 },
-                // y: {
-                //     type: 'linear',
-                //     position: 'left',
-                //     min: 0,
-                //     max: 100,
-                // }
                 y: {
                     type: 'linear',
                     position: 'left',

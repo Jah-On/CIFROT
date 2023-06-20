@@ -162,7 +162,7 @@ div.exportOptions {
     color: magenta;
 }
 
-#RightTest {
+#rightTest {
     color: red;
 }
 
@@ -176,7 +176,7 @@ div.exportOptions {
     background-color: magenta;
 }
 
-#RightTest:hover {
+#rightTest:hover {
     color:#000000;
     background-color: red;
 }
