@@ -22,8 +22,9 @@ const LOOP = 0;
 const SPAWN_NEW = 1;
 const RESET = 2;
 
-const MIN_FREQUENCY = 20;
-const MAX_FREQUENCY = 20000;
+const MIN_FREQUENCY   = 20;
+const MAX_FREQUENCY   = 20000;
+const ADJUST_TIME     = 60000; // in milliseconds 
 const GAIN_MULTIPLIER = 1;
 
 var FREQUENCY_INTERVAL = 200;
@@ -108,7 +109,7 @@ function stopVolumeCalibration() {
     clearInterval(intervalTracker);
     transitionDialog(1);
     resetAudio(true);
-    setTimeout(testSelection, 60000);
+    setTimeout(testSelection, ADJUST_TIME);
     intervalTracker = setInterval(
         frequencyIncrease, 
         Math.random()*49 + 1, 
@@ -151,7 +152,6 @@ function test(elementPosition, color){
         document.getElementsByClassName("frChart")[testType], 
         {
         type: "line",
-        color: "rgba(200, 200, 200)",
         data: {
             datasets: [{
                 label: "Frequency Response",
@@ -163,20 +163,38 @@ function test(elementPosition, color){
             }],
         },
         options: {
+            color: "rgb(255, 255, 255)",
             elements: {
                 point: {
                     radius: 4,
                 },
             },
             scales: {
+                color: "rgb(255, 255, 255)",
                 x: {
                     type: 'linear',
+                    title: {
+                        display: true,
+                        text: 'Frequency (Hz)',
+                        color: "rgb(255, 255, 255)",
+                    },
+                    ticks: {
+                        color: "rgb(255, 255, 255)",
+                    },
                     position: 'bottom',
                     min: 20,
                     max: 20000,
                 },
                 y: {
                     type: 'linear',
+                    title: {
+                        display: true,
+                        text: 'Volume',
+                        color: "rgb(255, 255, 255)",
+                    },
+                    ticks: {
+                        color: "rgb(255, 255, 255)",
+                    },
                     position: 'left',
                     min: 0,
                     max: 0.2,
