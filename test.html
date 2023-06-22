@@ -24,6 +24,10 @@
                     onchange="if (this.value < 1) this.value = 1; if (this.value > 1000) this.value = 1000;"
                 >
             </label>
+            <div style="display: flex; flex-direction: row;">
+                <input type="checkbox" id="rampSelect" style="width: 85px;">
+                <label for="rampSelect">Sensitive Ramp</label>
+            </div>
             <button id="testStart" onclick="startVolumeCalibration()">Start Test</button>
         </div>
         <dialog class="testing">

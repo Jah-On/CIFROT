@@ -27,6 +27,32 @@ const MAX_FREQUENCY   = 20000;
 const ADJUST_TIME     = 60000; // in milliseconds 
 const GAIN_MULTIPLIER = 1;
 
+const RAMP_MAP = [
+    { // Base ramp
+        BOUNDS: {
+            UPPER: 0.05,
+            LOWER: 0.025,
+        },
+        MULTIPLIERS: {
+            UPPER: 15,
+            MID:   1,
+            LOWER: 0.075,
+        }
+    },
+    { // Sensitive ramp
+        BOUNDS: {
+            UPPER: 0.02,
+            LOWER: 0.005,
+        },
+        MULTIPLIERS: {
+            UPPER: 20,
+            MID:   0.075,
+            LOWER: 0.0175,
+        }
+    }
+]
+var RAMP       = 0;
+
 var FREQUENCY_INTERVAL = 200;
 var TEST_NAME = "";
 
@@ -95,6 +121,8 @@ function startVolumeCalibration() {
     if (TEST_NAME == "") {
         TEST_NAME = "Test";
     }
+    RAMP = document.getElementById("rampSelect").checked|0;
+    console.log(RAMP);
     document.getElementsByClassName("testing")[0].showModal();
     stageAudio(true);
     intervalTracker = setInterval(frequencyIncrease, 20, increaseTypes.LOGARITHMIC, 0, LOOP);
@@ -197,7 +225,7 @@ function test(elementPosition, color){
                     },
                     position: 'left',
                     min: 0,
-                    max: 0.2,
+                    suggestedMax: 0.02,
                 }
             },
         },
@@ -254,7 +282,7 @@ function keyPress(event){
             if (stateElement.hidden){ break; }
             stateElement.hidden = true;
             gainNode.gain.value = 1;
-            intervalTracker = setInterval(changeGain, 20, -0.005);
+            intervalTracker = setInterval(changeGain, 1, -0.0001);
             break;
         case " ":
             if (!stateElement.hidden){ break; }
@@ -277,19 +305,21 @@ function keyPress(event){
 }
 
 function changeGain(value){
-    if (gainNode.gain.value <= 0){
+    let gain = gainNode.gain.value;
+
+    if (gain > RAMP_MAP[RAMP].BOUNDS.UPPER){
+        gainNode.gain.value += value * RAMP_MAP[RAMP].MULTIPLIERS.UPPER;
+    } else if (gain > RAMP_MAP[RAMP].BOUNDS.LOWER){
+        gainNode.gain.value += value * RAMP_MAP[RAMP].MULTIPLIERS.MID;
+    } else if (gain > 0){
+        gainNode.gain.value += value * RAMP_MAP[RAMP].MULTIPLIERS.LOWER;
+    } else {
         pushData(
             oscillator.frequency.value, 
             0,
             chart.config.data.datasets[0].borderColor
         );
-    } else if (gainNode.gain.value < 0.01){
-        gainNode.gain.value += value * 0.001;
-    } else if (gainNode.gain.value < 0.1){
-        gainNode.gain.value += value * 0.05;
-        return;
     }
-    gainNode.gain.value += value;
 }
 
 function downloadImage(){
