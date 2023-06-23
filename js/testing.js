@@ -24,7 +24,7 @@ const RESET = 2;
 
 const MIN_FREQUENCY   = 20;
 const MAX_FREQUENCY   = 20000;
-const ADJUST_TIME     = 60000; // in milliseconds 
+const ADJUST_TIME     = 600; // in milliseconds 
 const GAIN_MULTIPLIER = 1;
 
 const RAMP_MAP = [
@@ -54,7 +54,8 @@ const RAMP_MAP = [
 var RAMP       = 0;
 
 var FREQUENCY_INTERVAL = 200;
-var TEST_NAME = "";
+var TEST_NAME          = "";
+var TOUCHSCREEN        = false;
 
 function frequencyIncrease(type, value, action) {
     switch (type) {
@@ -122,7 +123,6 @@ function startVolumeCalibration() {
         TEST_NAME = "Test";
     }
     RAMP = document.getElementById("rampSelect").checked|0;
-    console.log(RAMP);
     document.getElementsByClassName("testing")[0].showModal();
     stageAudio(true);
     intervalTracker = setInterval(frequencyIncrease, 20, increaseTypes.LOGARITHMIC, 0, LOOP);
@@ -153,7 +153,15 @@ function resetTesting() {
     }
     document.getElementById("testIntro").style.display = "flex";
     if (testType != -1){
-        document.getElementsByClassName("inTestDirections")[testType].style.display = "flex";
+        if (TOUCHSCREEN){
+            for (const element of document.getElementsByName("mobileInputContainer")[testType].children){
+                element.style.display = "none";
+            }
+            document.getElementsByName("mobileStart")[testType].style.display = "inline";
+            document.getElementsByName("mobileInputContainer")[testType].style.display = "inline-flex";
+        } else {
+            document.getElementsByClassName("keyboardInput")[testType].style.display = "flex";
+        }
         document.getElementsByClassName("exportOptions")[testType].style.display = "none";
         testType = -1;
     }
@@ -173,6 +181,7 @@ function testSelection(){
 
 function test(elementPosition, color){
     if (!testing){ return; }
+    TOUCHSCREEN = window.getComputedStyle(document.getElementsByName("mobileInputContainer")[0]).display != "none";
     document.getElementsByClassName("testing")[2].close();
     document.getElementsByClassName("testing")[elementPosition].showModal();
     testType = elementPosition - 3;
@@ -198,7 +207,6 @@ function test(elementPosition, color){
                 },
             },
             scales: {
-                color: "rgb(255, 255, 255)",
                 x: {
                     type: 'linear',
                     title: {
@@ -245,9 +253,13 @@ function pushData(x, y, color){
     if (oscillator.frequency.value >= MAX_FREQUENCY){
         clearInterval(intervalTracker);
         document.getRootNode().removeEventListener("keydown", keyPress);
-        document.getElementsByClassName("inTestDirections")[testType].style.display = "none";
+        if (!TOUCHSCREEN){
+            document.getElementsByClassName("keyboardInput")[testType].style.display = "none";
+            document.getElementsByClassName("startIndicator")[testType].style.display = "inline";
+        } else {
+            document.getElementsByName("mobileInputContainer")[testType].style.display = "none";
+        }
         document.getElementsByClassName("exportOptions")[testType].style.display = "flex";
-        document.getElementsByClassName("startIndicator")[testType].hidden = false;
         clearAudio();
         testing = false;
         return;
@@ -257,9 +269,10 @@ function pushData(x, y, color){
 
 function keyPress(event){
     let stateElement = document.getElementsByClassName("startIndicator")[testType];
+    let isHidden = stateElement.style.display == "none";
     switch (event.key) {
         case "ArrowRight":
-            if (!stateElement.hidden || (testType != sideTypes.BOTH)){
+            if (!isHidden || (testType != sideTypes.BOTH)){
                 break;
             }
             pushData(
@@ -269,7 +282,7 @@ function keyPress(event){
             );
             break;
         case "ArrowLeft":
-            if (!stateElement.hidden || (testType != sideTypes.BOTH)){
+            if (!isHidden || (testType != sideTypes.BOTH)){
                 break;
             }
             pushData(
@@ -279,13 +292,13 @@ function keyPress(event){
             );
             break;
         case "Enter":
-            if (stateElement.hidden){ break; }
-            stateElement.hidden = true;
+            if (isHidden){ break; }
+            stateElement.style.display = "none";
             gainNode.gain.value = 1;
             intervalTracker = setInterval(changeGain, 1, -0.0001);
             break;
         case " ":
-            if (!stateElement.hidden){ break; }
+            if (!isHidden){ break; }
             pushData(
                 oscillator.frequency.value, 
                 gainNode.gain.value * GAIN_MULTIPLIER,
@@ -293,7 +306,7 @@ function keyPress(event){
             );
             break;
         case "0":
-            if (!stateElement.hidden){ break; }
+            if (!isHidden){ break; }
             pushData(
                 oscillator.frequency.value,
                 0,
@@ -302,6 +315,39 @@ function keyPress(event){
         default:
             break;
     }
+}
+
+function mobileInputStart(srcElement){
+    for (let i = 0; i < srcElement.parentNode.children.length; i++){
+        srcElement.parentNode.children[i].style.display = "inline";
+    }
+    srcElement.style.display = "none";
+    gainNode.gain.value = 1;
+    intervalTracker = setInterval(changeGain, 1, -0.0001);
+}
+
+function mobileInputUnilateral(){
+    pushData(
+        oscillator.frequency.value,
+        gainNode.gain.value * GAIN_MULTIPLIER,
+        chart.config.data.datasets[0].borderColor
+    );
+}
+
+function mobileInputBilateral(color){
+    pushData(
+        oscillator.frequency.value,
+        gainNode.gain.value * GAIN_MULTIPLIER,
+        color
+    );
+}
+
+function mobileInputInaudible(){
+    pushData(
+        oscillator.frequency.value,
+        0,
+        "rgb(0, 0, 0)"
+    );
 }
 
 function changeGain(value){

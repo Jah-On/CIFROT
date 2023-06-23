@@ -15,18 +15,18 @@
         <a class="header" href="directions.html">Directions</a>
         <a class="header" href="test.html">Test</a>
     </div>
-    <div class="body"></div>
+    <div class="body">
         <div id="testIntro">
-            <input type="text" id="testName" placeholder="Test name...">
-            <label for="increment">Increment (Hz):
+            <input type="text" id="testName" placeholder="Test name..." style="font-size: 250%;">
+            <label for="increment" style="font-size: 250%;">Increment (Hz):
                 <input type="number" id="increment" value="200" min="1" max="1000"
-                    style="width: 85px;"
+                    style="width: 3em; font-size: 125%;"
                     onchange="if (this.value < 1) this.value = 1; if (this.value > 1000) this.value = 1000;"
                 >
             </label>
             <div style="display: flex; flex-direction: row;">
                 <input type="checkbox" id="rampSelect" style="width: 85px;">
-                <label for="rampSelect">Sensitive Ramp</label>
+                <label for="rampSelect" style="font-size: 200%;">Sensitive Ramp</label>
             </div>
             <button id="testStart" onclick="startVolumeCalibration()">Start Test</button>
         </div>
@@ -60,55 +60,71 @@
             </div>
         </dialog>
         <dialog class="testing">
-            <h2>
+            <p style="line-height: 0;">
                 Testing Left CI
-            </h2>
+            </p>
             <div class="exportOptions">
                 <button onclick="downloadImage()">Save Image</button>
                 <button onclick="downloadCSV()">Save CSV</button>
                 <button onclick="resetTesting()">Restart</button>
             </div>
-            <div class="inTestDirections">
-                <span class="startIndicator">
-                    Press "Enter" to begin.
-                </span>
-                Press "Space" when the pitch becomes inaudible or "0" if inaudible from the start.
+            <div class="keyboardInput">
+                <span class="startIndicator">Press "Enter" to begin.</span>
+                <span>Press "Space" when the pitch becomes inaudible or "0" if inaudible from the start</span>
             </div>
             <canvas class="frChart"></canvas>
+            <div name="mobileInputContainer" class="mobileInput">
+                <button name="mobileStart" class="mobileInput" onclick="mobileInputStart(this);">Start</button>
+                <button name="mobileInputButton" class="mobileInput" style="display: none;" onclick="mobileInputInaudible();">None</button>
+                <button name="mobileInputButton" class="mobileInput" style="display: none;" onclick="mobileInputUnilateral();">Gone</button>
+            </div>
         </dialog>
         <dialog class="testing">
-            <h2>
+            <p style="line-height: 0;">
                 Testing Both CIs
-            </h2>
+            </p>
             <div class="exportOptions">
                 <button onclick="downloadImage()">Save Image</button>
                 <button onclick="downloadCSV()">Save CSV</button>
                 <button onclick="resetTesting()">Restart</button>
             </div>
-            <div class="inTestDirections">
-                <span class="startIndicator">
-                    Press "Enter" to begin.
+            <div class="keyboardInput">
+                <span class="startIndicator">Press "Enter" to begin.</span>
+                <span>
+                    Press "←" when the pitch becomes inaudible on the left CI last, "→" if the right CI is last, 
+                    "Space" when indiscernible, or "0" if inaudible from the start.
                 </span>
-                Press "←" when the pitch becomes inaudible on the left CI last, "→" if the right CI is last, "Space" when indiscernible, or "0" if inaudible from the start.
             </div>
             <canvas class="frChart"></canvas>
+            <div name="mobileInputContainer" class="mobileInput">
+                <button name="mobileStart" class="mobileInput" onclick="mobileInputStart(this);">Start</button>
+                <button name="mobileInputButton" class="mobileInput" style="display: none;" onclick="mobileInputBilateral('rgb(0, 0, 255)');">Left</button>
+                <div class="mobileBoth">
+                    <button name="mobileInputButton" class="mobileInput" onclick="mobileInputUnilateral();">Both</button>
+                    <button name="mobileInputButton" class="mobileInput" onclick="mobileInputInaudible();">None</button>
+                </div>
+                <button name="mobileInputButton" class="mobileInput" style="display: none;" onclick="mobileInputBilateral('rgb(255, 0, 0)');">Right</button>
+            </div>
         </dialog>
         <dialog class="testing">
-            <h2>
+            <p style="line-height: 0;">
                 Testing Right CI
-            </h2>
+            </p>
             <div class="exportOptions">
                 <button onclick="downloadImage()">Save Image</button>
                 <button onclick="downloadCSV()">Save CSV</button>
                 <button onclick="resetTesting()">Restart</button>
             </div>
-            <div class="inTestDirections">
-                <span class="startIndicator">
-                    Press "Enter" to begin.
-                </span>
-                Press "Space" when the pitch becomes inaudible or "0" if inaudible from the start
+            <div class="keyboardInput">
+                <span class="startIndicator">Press "Enter" to begin.</span>
+                <span>Press "Space" when the pitch becomes inaudible or "0" if inaudible from the start</span>
             </div>
             <canvas class="frChart"></canvas>
+            <div name="mobileInputContainer" class="mobileInput">
+                <button name="mobileStart" class="mobileInput" onclick="mobileInputStart(this);">Start</button>
+                <button name="mobileInputButton" class="mobileInput" style="display: none;" onclick="mobileInputInaudible();">None</button>
+                <button name="mobileInputButton" class="mobileInput" style="display: none;" onclick="mobileInputUnilateral();">Gone</button>
+            </div>
         </dialog>
     </div>
 </body>

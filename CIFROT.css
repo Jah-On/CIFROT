@@ -4,14 +4,14 @@ html {
 
 h1 {
     color: rgb(200, 200, 200);
-    font-size: 8em;
+    font-size: 800%;
     font-weight: 300;
     text-align: center;
 }
 
 h2 {
     color: rgb(200, 200, 200);
-    font-size: 4em;
+    font-size: 400%;
     font-weight: 300;
     margin-left: 10%;
     margin-right: 10%;
@@ -22,7 +22,7 @@ h2 {
 
 p {
     color: rgb(200, 200, 200);
-    font-size: 2em;
+    font-size: 200%;
     font-weight: 500;
     margin-left: 10%;
     margin-right: 10%;
@@ -30,11 +30,23 @@ p {
     word-spacing: 50%;
 }
 
+body {
+    margin: 0px;
+}
+
 label {
     color: rgb(200, 200, 200);
 }
 
+button {
+    font-size: 300%;
+    margin: 5px;
+}
+
 div.body {
+    display: inline-block;
+    height: calc(100vh - 80px);
+    width: 100%;
     margin-top: 75px;
 }
 
@@ -88,15 +100,13 @@ div.nextPage * {
 }
 
 #testIntro {
-    position: fixed;
+    position: relative;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
-    width: 20%;
     height: fit-content;
-    top: 40%;
-    left: 42.5%;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 #testIntro * {
@@ -105,10 +115,10 @@ div.nextPage * {
 }
 
 #testStart {
-    width: 100%;
+    width: 30%;
     text-align: center;
     font-weight: 1000;
-    font-size: xx-large;
+    font-size: 300%;
     background-color: #000000;
     color: #FFFFFF;
     border: #FFFFFF solid 2px;
@@ -125,8 +135,10 @@ dialog.testing {
     background-color: #000000;
     color: #FFFFFF;
     border: #FFFFFF solid 2px;
-    width: 80%;
+    width: 95%;
+    max-height: 95%;
     text-align: center;
+    padding: 2px;
 }
 
 div.testSelect {
@@ -141,11 +153,6 @@ div.testSelect * {
     width: 33.33%;
     height: 40vh;
     border: #0F0F0F solid 2px;
-}
-
-div.inTestDirections {
-    display: flex;
-    flex-direction: column;
 }
 
 div.exportOptions {
@@ -183,5 +190,49 @@ div.exportOptions {
 
 canvas.frChart {
     width: auto;
-    height: auto;
+    max-height: 60vh;
+}
+
+div.keyboardInput {
+    display: flex;
+    flex-direction: column;
+}
+
+div.mobileInput {
+    display: none;
+}
+
+div.mobileInput * {
+    font-size: 2em;
+    width: 100%;
+}
+
+div.mobileBoth {
+    display: none; 
+    flex-direction: column; 
+}
+
+div.mobileBoth > button.mobileInput {
+    font-size: 200%;
+    min-height: 5vh;
+}
+
+button.mobileInput {
+    font-size: 400%;
+    font-weight: 1000;
+    margin: 5px;
+    min-height: 10vh;
+    justify-content: center;
+    vertical-align: middle;
+}
+
+@media (hover: none) {
+    div.keyboardInput {
+        display: none;
+    }
+    div.mobileInput {
+        display: inline-flex;
+        flex-direction: row;
+        width: 100%;
+    }
 }
