@@ -188,6 +188,11 @@ div.exportOptions {
     background-color: red;
 }
 
+span.indicateZero {
+    display: none;
+    text-align: center;
+}
+
 canvas.frChart {
     width: auto;
     max-height: 60vh;

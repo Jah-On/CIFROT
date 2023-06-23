@@ -275,6 +275,7 @@ function keyPress(event){
             if (!isHidden || (testType != sideTypes.BOTH)){
                 break;
             }
+            document.getElementsByClassName("indicateZero")[testType].style.display = "none";
             pushData(
                 oscillator.frequency.value, 
                 gainNode.gain.value * GAIN_MULTIPLIER,
@@ -285,6 +286,7 @@ function keyPress(event){
             if (!isHidden || (testType != sideTypes.BOTH)){
                 break;
             }
+            document.getElementsByClassName("indicateZero")[testType].style.display = "none";
             pushData(
                 oscillator.frequency.value,
                 gainNode.gain.value * GAIN_MULTIPLIER,
@@ -299,6 +301,7 @@ function keyPress(event){
             break;
         case " ":
             if (!isHidden){ break; }
+            document.getElementsByClassName("indicateZero")[testType].style.display = "none";
             pushData(
                 oscillator.frequency.value, 
                 gainNode.gain.value * GAIN_MULTIPLIER,
@@ -307,6 +310,7 @@ function keyPress(event){
             break;
         case "0":
             if (!isHidden){ break; }
+            document.getElementsByClassName("indicateZero")[testType].style.display = "none";
             pushData(
                 oscillator.frequency.value,
                 0,
@@ -327,6 +331,7 @@ function mobileInputStart(srcElement){
 }
 
 function mobileInputUnilateral(){
+    document.getElementsByClassName("indicateZero")[testType].style.display = "none";
     pushData(
         oscillator.frequency.value,
         gainNode.gain.value * GAIN_MULTIPLIER,
@@ -335,6 +340,7 @@ function mobileInputUnilateral(){
 }
 
 function mobileInputBilateral(color){
+    document.getElementsByClassName("indicateZero")[testType].style.display = "none";
     pushData(
         oscillator.frequency.value,
         gainNode.gain.value * GAIN_MULTIPLIER,
@@ -343,6 +349,7 @@ function mobileInputBilateral(color){
 }
 
 function mobileInputInaudible(){
+    document.getElementsByClassName("indicateZero")[testType].style.display = "none";
     pushData(
         oscillator.frequency.value,
         0,
@@ -360,11 +367,8 @@ function changeGain(value){
     } else if (gain > 0){
         gainNode.gain.value += value * RAMP_MAP[RAMP].MULTIPLIERS.LOWER;
     } else {
-        pushData(
-            oscillator.frequency.value, 
-            0,
-            chart.config.data.datasets[0].borderColor
-        );
+        gainNode.gain.value = 0;
+        document.getElementsByClassName("indicateZero")[testType].style.display = "block";
     }
 }
 
