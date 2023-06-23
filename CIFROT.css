@@ -214,14 +214,14 @@ div.mobileBoth {
 
 div.mobileBoth > button.mobileInput {
     font-size: 200%;
-    min-height: 5vh;
+    min-height: 4vh;
 }
 
 button.mobileInput {
     font-size: 400%;
     font-weight: 1000;
     margin: 5px;
-    min-height: 10vh;
+    min-height: 8vh;
     justify-content: center;
     vertical-align: middle;
 }

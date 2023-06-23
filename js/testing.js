@@ -24,7 +24,7 @@ const RESET = 2;
 
 const MIN_FREQUENCY   = 20;
 const MAX_FREQUENCY   = 20000;
-const ADJUST_TIME     = 600; // in milliseconds 
+const ADJUST_TIME     = 60000; // in milliseconds 
 const GAIN_MULTIPLIER = 1;
 
 const RAMP_MAP = [
