@@ -364,7 +364,7 @@ function changeGain(value){
         gainNode.gain.value += value * RAMP_MAP[RAMP].MULTIPLIERS.UPPER;
     } else if (gain > RAMP_MAP[RAMP].BOUNDS.LOWER){
         gainNode.gain.value += value * RAMP_MAP[RAMP].MULTIPLIERS.MID;
-    } else if (gain > 0){
+    } else if ((gain - (value * RAMP_MAP[RAMP].MULTIPLIERS.LOWER)) > 0){
         gainNode.gain.value += value * RAMP_MAP[RAMP].MULTIPLIERS.LOWER;
     } else {
         gainNode.gain.value = 0;
