@@ -22,9 +22,9 @@ const LOOP = 0;
 const SPAWN_NEW = 1;
 const RESET = 2;
 
-const MIN_FREQUENCY   = 20;
+const MIN_FREQUENCY   = 80;
 const MAX_FREQUENCY   = 20000;
-const ADJUST_TIME     = 60000; // in milliseconds 
+const ADJUST_TIME     = 60; // in milliseconds 
 const GAIN_MULTIPLIER = 1;
 
 const RAMP_MAP = [
@@ -56,6 +56,9 @@ var RAMP       = 0;
 var FREQUENCY_INTERVAL = 200;
 var TEST_NAME          = "";
 var TOUCHSCREEN        = false;
+
+var gainValue = 1;
+var intervalCount = 0;
 
 function frequencyIncrease(type, value, action) {
     switch (type) {
@@ -218,8 +221,8 @@ function test(elementPosition, color){
                         color: "rgb(255, 255, 255)",
                     },
                     position: 'bottom',
-                    min: 20,
-                    max: 20000,
+                    min: 50,
+                    max: 21000,
                 },
                 y: {
                     type: 'linear',
@@ -265,6 +268,8 @@ function pushData(x, y, color){
         return;
     }
     gainNode.gain.value = 1;
+    gainValue = 1;
+    isMuted = false;
 }
 
 function keyPress(event){
@@ -278,7 +283,7 @@ function keyPress(event){
             document.getElementsByClassName("indicateZero")[testType].style.display = "none";
             pushData(
                 oscillator.frequency.value, 
-                gainNode.gain.value * GAIN_MULTIPLIER,
+                gainValue * GAIN_MULTIPLIER,
                 "rgba(255, 0, 0)"
             );
             break;
@@ -289,7 +294,7 @@ function keyPress(event){
             document.getElementsByClassName("indicateZero")[testType].style.display = "none";
             pushData(
                 oscillator.frequency.value,
-                gainNode.gain.value * GAIN_MULTIPLIER,
+                gainValue * GAIN_MULTIPLIER,
                 "rgba(0, 0, 255)"
             );
             break;
@@ -297,6 +302,7 @@ function keyPress(event){
             if (isHidden){ break; }
             stateElement.style.display = "none";
             gainNode.gain.value = 1;
+            gainValue = 1;
             intervalTracker = setInterval(changeGain, 1, -0.0001);
             break;
         case " ":
@@ -304,7 +310,7 @@ function keyPress(event){
             document.getElementsByClassName("indicateZero")[testType].style.display = "none";
             pushData(
                 oscillator.frequency.value, 
-                gainNode.gain.value * GAIN_MULTIPLIER,
+                gainValue * GAIN_MULTIPLIER,
                 chart.config.data.datasets[0].borderColor
             );
             break;
@@ -327,6 +333,7 @@ function mobileInputStart(srcElement){
     }
     srcElement.style.display = "none";
     gainNode.gain.value = 1;
+    gainValue = 1;
     intervalTracker = setInterval(changeGain, 1, -0.0001);
 }
 
@@ -334,7 +341,7 @@ function mobileInputUnilateral(){
     document.getElementsByClassName("indicateZero")[testType].style.display = "none";
     pushData(
         oscillator.frequency.value,
-        gainNode.gain.value * GAIN_MULTIPLIER,
+        gainValue * GAIN_MULTIPLIER,
         chart.config.data.datasets[0].borderColor
     );
 }
@@ -343,7 +350,7 @@ function mobileInputBilateral(color){
     document.getElementsByClassName("indicateZero")[testType].style.display = "none";
     pushData(
         oscillator.frequency.value,
-        gainNode.gain.value * GAIN_MULTIPLIER,
+        gainValue * GAIN_MULTIPLIER,
         color
     );
 }
@@ -358,18 +365,24 @@ function mobileInputInaudible(){
 }
 
 function changeGain(value){
-    let gain = gainNode.gain.value;
-
-    if (gain > RAMP_MAP[RAMP].BOUNDS.UPPER){
-        gainNode.gain.value += value * RAMP_MAP[RAMP].MULTIPLIERS.UPPER;
-    } else if (gain > RAMP_MAP[RAMP].BOUNDS.LOWER){
-        gainNode.gain.value += value * RAMP_MAP[RAMP].MULTIPLIERS.MID;
-    } else if ((gain - (value * RAMP_MAP[RAMP].MULTIPLIERS.LOWER)) > 0){
-        gainNode.gain.value += value * RAMP_MAP[RAMP].MULTIPLIERS.LOWER;
+    if (gainValue > RAMP_MAP[RAMP].BOUNDS.UPPER){
+        gainValue += value * RAMP_MAP[RAMP].MULTIPLIERS.UPPER;
+    } else if (gainValue > RAMP_MAP[RAMP].BOUNDS.LOWER){
+        gainValue += value * RAMP_MAP[RAMP].MULTIPLIERS.MID;
+    } else if ((gainValue - (value * RAMP_MAP[RAMP].MULTIPLIERS.LOWER)) > 0){
+        gainValue += value * RAMP_MAP[RAMP].MULTIPLIERS.LOWER;
     } else {
-        gainNode.gain.value = 0;
+        gainValue = 0;
         document.getElementsByClassName("indicateZero")[testType].style.display = "block";
     }
+
+    intervalCount++;
+    if (((intervalCount % 100)/50) >= 1.4){ 
+        gainNode.gain.value = 0;
+    } else {
+        gainNode.gain.value = gainValue;
+    }
+    isMuted = !isMuted;
 }
 
 function downloadImage(){
