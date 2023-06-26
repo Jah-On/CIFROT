@@ -24,7 +24,7 @@ const RESET = 2;
 
 const MIN_FREQUENCY   = 80;
 const MAX_FREQUENCY   = 20000;
-const ADJUST_TIME     = 60000; // in milliseconds 
+const ADJUST_TIME     = 6000; // in milliseconds 
 const GAIN_MULTIPLIER = 1;
 
 const RAMP_MAP = [
@@ -377,7 +377,7 @@ function changeGain(value){
     }
 
     intervalCount++;
-    if (((intervalCount % 100)/50) >= 1.4){ 
+    if (((intervalCount % 60)/30) >= 1.4){ 
         gainNode.gain.value = 0;
     } else {
         gainNode.gain.value = gainValue;
