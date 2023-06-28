@@ -1,13 +1,28 @@
+// Audio interface variables
 var audioInterface = window.AudioContext || window.webkitAudioContext;
 var outputDevice = new audioInterface();
 var gainNode = outputDevice.createGain();
 var oscillator = gainNode.context.createOscillator();
+
+// Tracking variables
 var intervalTracker;
 var timeoutTracker;
+
+// Testing variables
 var testing = false;
 var testType = -1;
+var gainValue = 1;
+var isMuted = false;
+var intervalCount = 0;
+var FREQUENCY_INTERVAL = 200;
+var TEST_NAME          = "";
+var levels = [];
+
+// UI variables
+var TOUCHSCREEN        = false;
 var chart;
 
+// Constants
 const sideTypes = {
     LEFT: 0,
     BOTH: 1,
@@ -26,7 +41,6 @@ const RESET = 2;
 const MIN_FREQUENCY   = 80;
 const MAX_FREQUENCY   = 20000;
 const ADJUST_TIME     = 60000; // in milliseconds 
-const GAIN_MULTIPLIER = 1;
 
 const RAMP_MAP = [
     { // Base ramp
@@ -51,15 +65,9 @@ const RAMP_MAP = [
             LOWER: 0.0175,
         }
     }
-]
+];
 var RAMP       = 0;
-
-var FREQUENCY_INTERVAL = 200;
-var TEST_NAME          = "";
-var TOUCHSCREEN        = false;
-
-var gainValue = 1;
-var intervalCount = 0;
+/********************************************/
 
 function frequencyIncrease(type, value, action) {
     switch (type) {
@@ -150,6 +158,7 @@ function stopVolumeCalibration() {
 }
 
 function resetTesting() {
+    levels = [];
     clearInterval(intervalTracker);
     clearAudio();
     for (let i = 0; i < document.getElementsByClassName("testing").length; i++) {
@@ -197,19 +206,27 @@ function test(elementPosition, color){
             datasets: [{
                 label: "Frequency Response",
                 backgroundColor: [],
+                pointRadius: 4,
                 borderColor: color,
                 data: [],
                 cubicInterpolationMode: 'monotone',
-                tension: 0.4
+                tension: 0.4,
+                z: 1,
+            }, 
+            {
+                label: "X-Axis",
+                backgroundColor: "rgb(255, 255, 255)",
+                pointRadius: 0,
+                borderColor: "rgb(255, 255, 255)",
+                borderDash: [5, 5],
+                data: [
+                    {x: 50, y: 0},
+                    {x: 21000, y: 0}
+                ],
             }],
         },
         options: {
             color: "rgb(255, 255, 255)",
-            elements: {
-                point: {
-                    radius: 4,
-                },
-            },
             scales: {
                 x: {
                     type: 'linear',
@@ -229,15 +246,15 @@ function test(elementPosition, color){
                     type: 'linear',
                     title: {
                         display: true,
-                        text: 'Volume',
+                        text: 'Relative Volume (%)',
                         color: "rgb(255, 255, 255)",
                     },
                     ticks: {
                         color: "rgb(255, 255, 255)",
                     },
                     position: 'left',
-                    min: 0,
-                    suggestedMax: 0.02,
+                    suggestedMin: -5,
+                    suggestedMax:  5,
                 }
             },
         },
@@ -247,10 +264,24 @@ function test(elementPosition, color){
 }
 
 function pushData(x, y, color){
-    chart.config.data.datasets[0].data.push({
-        x: x,
-        y: y,
-    });
+    chart.config.data.datasets[0].data.push({x: x, y: y});
+    levels.push(y);
+    let average = 0;
+    let count = 0;
+    for (let i = 0; i < levels.length; i++){
+        if (levels[i] != 0){
+            average += levels[i];
+            count++;
+        }
+    }
+    average /= count;
+    for (let i = 0; i < levels.length; i++){
+        if (levels[i] != 0){
+            chart.config.data.datasets[0].data[i].y = (levels[i] - average)/average*(-100);
+        } else {
+            chart.config.data.datasets[0].data[i].y = 0;
+        }
+    }
     chart.config.data.datasets[0].backgroundColor.push(color);
     chart.update();
     frequencyIncrease(increaseTypes.LINEAR, FREQUENCY_INTERVAL, RESET);
@@ -284,7 +315,7 @@ function keyPress(event){
             document.getElementsByClassName("indicateZero")[testType].style.display = "none";
             pushData(
                 oscillator.frequency.value, 
-                gainValue * GAIN_MULTIPLIER,
+                gainValue,
                 "rgba(255, 0, 0)"
             );
             break;
@@ -295,7 +326,7 @@ function keyPress(event){
             document.getElementsByClassName("indicateZero")[testType].style.display = "none";
             pushData(
                 oscillator.frequency.value,
-                gainValue * GAIN_MULTIPLIER,
+                gainValue,
                 "rgba(0, 0, 255)"
             );
             break;
@@ -311,7 +342,7 @@ function keyPress(event){
             document.getElementsByClassName("indicateZero")[testType].style.display = "none";
             pushData(
                 oscillator.frequency.value, 
-                gainValue * GAIN_MULTIPLIER,
+                gainValue,
                 chart.config.data.datasets[0].borderColor
             );
             break;
@@ -342,7 +373,7 @@ function mobileInputUnilateral(){
     document.getElementsByClassName("indicateZero")[testType].style.display = "none";
     pushData(
         oscillator.frequency.value,
-        gainValue * GAIN_MULTIPLIER,
+        gainValue,
         chart.config.data.datasets[0].borderColor
     );
 }
@@ -351,7 +382,7 @@ function mobileInputBilateral(color){
     document.getElementsByClassName("indicateZero")[testType].style.display = "none";
     pushData(
         oscillator.frequency.value,
-        gainValue * GAIN_MULTIPLIER,
+        gainValue,
         color
     );
 }
