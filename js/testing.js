@@ -188,6 +188,7 @@ function resetTesting() {
 function testSelection(){
     if (!testing){ return; }
     clearInterval(intervalTracker);
+    clearTimeout(timeoutTracker);
     resetAudio(false);
     transitionDialog(2);
 }
@@ -401,16 +402,19 @@ function changeGain(value){
         gainValue += value * RAMP_MAP[RAMP].MULTIPLIERS.UPPER;
     } else if (gainValue > RAMP_MAP[RAMP].BOUNDS.LOWER){
         gainValue += value * RAMP_MAP[RAMP].MULTIPLIERS.MID;
-    } else if ((gainValue - (value * RAMP_MAP[RAMP].MULTIPLIERS.LOWER)) > 0){
+    } else if ((gainValue - (value * RAMP_MAP[RAMP].MULTIPLIERS.LOWER)) > 0.000001){
         gainValue += value * RAMP_MAP[RAMP].MULTIPLIERS.LOWER;
     } else {
-        gainValue = 0;
         document.getElementsByClassName("indicateZero")[testType].style.display = "block";
+        gainValue = 0x00;
+        while (gainValue != 0x00){
+            gainValue = 0x00;
+        }
     }
 
     intervalCount++;
     if (((intervalCount % 60)/30) >= 1.4){ 
-        gainNode.gain.value = 0;
+        gainNode.gain.value = 0x00;
     } else {
         gainNode.gain.value = gainValue;
     }
