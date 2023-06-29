@@ -4,24 +4,6 @@ var outputDevice = new audioInterface();
 var gainNode = outputDevice.createGain();
 var oscillator = gainNode.context.createOscillator();
 
-// Tracking variables
-var intervalTracker;
-var timeoutTracker;
-
-// Testing variables
-var testing = false;
-var testType = -1;
-var gainValue = 1;
-var isMuted = false;
-var intervalCount = 0;
-var FREQUENCY_INTERVAL = 200;
-var TEST_NAME          = "";
-var levels = [];
-
-// UI variables
-var TOUCHSCREEN        = false;
-var chart;
-
 // Constants
 const sideTypes = {
     LEFT: 0,
@@ -38,6 +20,7 @@ const LOOP = 0;
 const SPAWN_NEW = 1;
 const RESET = 2;
 
+const GAIN_START      = 0.5;
 const MIN_FREQUENCY   = 80;
 const MAX_FREQUENCY   = 20000;
 const ADJUST_TIME     = 60000; // in milliseconds 
@@ -68,6 +51,24 @@ const RAMP_MAP = [
 ];
 var RAMP       = 0;
 /********************************************/
+
+// Route tracking variables
+var intervalTracker;
+var timeoutTracker;
+
+// Testing variables
+var testing = false;
+var testType = -1;
+var gainValue = GAIN_START;
+var isMuted = false;
+var intervalCount = 0;
+var FREQUENCY_INTERVAL = 200;
+var TEST_NAME          = "";
+var levels = [];
+
+// UI variables
+var TOUCHSCREEN        = false;
+var chart;
 
 function frequencyIncrease(type, value, action) {
     switch (type) {
@@ -108,12 +109,13 @@ function frequencyIncrease(type, value, action) {
 
 function resetAudio(startOn) {
     oscillator.frequency.value = MIN_FREQUENCY;
-    gainNode.gain.value = startOn|0; // Converts boolean to integer
+    gainNode.gain.value = startOn|0 * GAIN_START; // Converts boolean to integer
 }
 
 function stageAudio(startOn) {
     gainNode = outputDevice.createGain();
     gainNode.connect(outputDevice.destination);
+    gainNode.gain.value = startOn|0 * GAIN_START;
     oscillator = gainNode.context.createOscillator();
     oscillator.connect(gainNode);
     oscillator.start();
@@ -300,8 +302,8 @@ function pushData(x, y, color){
         testing = false;
         return;
     }
-    gainNode.gain.value = 1;
-    gainValue = 1;
+    gainNode.gain.value = GAIN_START;
+    gainValue = GAIN_START;
     isMuted = false;
 }
 
@@ -334,8 +336,8 @@ function keyPress(event){
         case "Enter":
             if (isHidden){ break; }
             stateElement.style.display = "none";
-            gainNode.gain.value = 1;
-            gainValue = 1;
+            gainNode.gain.value = GAIN_START;
+            gainValue = GAIN_START;
             intervalTracker = setInterval(changeGain, 1, -0.0001);
             break;
         case " ":
@@ -365,8 +367,8 @@ function mobileInputStart(srcElement){
         srcElement.parentNode.children[i].style.display = "inline";
     }
     srcElement.style.display = "none";
-    gainNode.gain.value = 1;
-    gainValue = 1;
+    gainNode.gain.value = GAIN_START;
+    gainValue = GAIN_START;
     intervalTracker = setInterval(changeGain, 1, -0.0001);
 }
 
